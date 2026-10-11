@@ -24,16 +24,20 @@ type Todo struct {
 var collection *mongo.Collection
 
 func main() {
-	fmt.Println("Hello, World!")
+	fmt.Println("Starting Go API Application...")
 
 	if os.Getenv("ENV") != "production" {
 		err := godotenv.Load(".env")
 		if err != nil {
-			log.Fatal("Error loading .env file: ", err)
+			log.Println("Note: No .env file found using system/docker environment variable")
 		}
 	}
 
 	MONGODB_URI := os.Getenv("MONGODB_URI")
+	if MONGODB_URI == "" {
+		MONGODB_URI = "mongodb://mongodb:27017/golang_db"
+	}
+
 	clientOptions := options.Client().ApplyURI(MONGODB_URI)
 	client, err := mongo.Connect(context.Background(), clientOptions)
 
@@ -46,10 +50,10 @@ func main() {
 	err = client.Ping(context.Background(), nil)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to connect to MongoDB ATLAS: ", err)
 	}
 
-	fmt.Println("Connected to MONGODB ATLAS")
+	fmt.Println("Connected successfully to MongoDB ATLAS!")
 
 	collection = client.Database("golang_db").Collection("todos")
 

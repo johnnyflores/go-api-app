@@ -2,8 +2,15 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-  bin = "main"
-  cmd = "go build -o {{.Output}} {{.Input}}"
-  exclude = ["tmp/*", "frontend/*"]
-  include = ["**/*.go"]
-  ignore = ["tmp/*"]
+  cmd = "go fmt ./... && go build -o ./tmp/main ."
+  bin = "./tmp/main"
+  include_ext = ["go", "json"]
+  exclude_dir = ["tmp", "vendor"]
+  delay = 500
+  stop_on_error = true
+
+[log]
+  time = true
+
+[misc]
+  clean_on_exit = true
