@@ -1,76 +1,117 @@
 # Go + React Todo App
 
-Full-stack todo application with:
+Full-stack todo app with:
 
-- Go backend using Fiber and MongoDB
-- React frontend using Vite, TypeScript, Chakra UI, and React Query
+- Go backend (Fiber + MongoDB)
+- React frontend (Vite + TypeScript + Chakra UI + React Query)
+- Docker Compose for running both services together
 
 ## Project Structure
 
 ```text
 .
-├── main.go              # Go API server
-├── .env                 # Backend environment variables
-├── air.toml             # Live-reload config for Go (optional)
-└── frontend/            # React app
+├── docker-compose.yml
+├── backend/
+│   ├── Dockerfile.dev
+│   ├── air.toml
+│   ├── main.go
+│   ├── go.mod
+│   └── .env
+└── frontend/
+    ├── Dockerfile.dev
+    ├── package.json
+    ├── vite.config.ts
+    ├── .env
+    └── src/
 ```
 
 ## Prerequisites
 
+### For Docker workflow (recommended)
+
+- Docker
+- Docker Compose (v2)
+- MongoDB connection string
+
+### For local (without Docker)
+
 - Go 1.25+
 - Node.js 20+ and npm
-- MongoDB connection string (Atlas or local)
+- MongoDB connection string
 
 ## Environment Variables
 
-### Backend (.env in project root)
+### Backend env file
 
-The backend reads variables from the root .env file when ENV is not production.
+Create or update `backend/.env`:
 
 ```env
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
-MONGODB_PASSWORD=
 ENV=development
 ```
 
 Notes:
 
-- MONGODB_URI is required.
-- PORT defaults to 5000 if not set.
+- `docker-compose.yml` loads env from `backend/.env`.
+- If `PORT` is not set, backend defaults to `5000`.
 
-### Frontend (frontend/.env)
+### Frontend env file
 
-Create a frontend .env file:
+Create or update `frontend/.env`:
 
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=/api
 ```
 
-The frontend calls:
+Notes:
 
-- GET VITE_API_URL + /todos
-- POST VITE_API_URL + /todos
-- PATCH VITE_API_URL + /todos/:id
-- DELETE VITE_API_URL + /todos/:id
+- In Docker Compose, Vite proxies `/api` to `backend:5000`.
+- In local non-Docker mode, you can also use `VITE_API_URL=http://localhost:5000/api`.
 
-## Run Locally
+## Run With Docker Compose
+
+From project root:
+
+```bash
+docker compose up --build
+```
+
+App URLs:
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000/api
+
+Useful commands:
+
+```bash
+# Start in detached mode
+docker compose up -d --build
+
+# View logs
+docker compose logs -f
+
+# Stop services
+docker compose down
+
+# Stop and remove volumes (useful when dependencies are stale)
+docker compose down -v
+```
+
+## Run Locally (Without Docker)
 
 ### 1) Start backend
 
-From the project root:
-
 ```bash
+cd backend
+go mod download
 go run main.go
 ```
 
-API will run at:
-
-- http://localhost:5000
-
-Optional live reload with Air (if installed):
+Optional live reload:
 
 ```bash
+cd backend
 air
 ```
 
@@ -84,45 +125,28 @@ npm install
 npm run dev
 ```
 
-Frontend will run at:
-
-- http://localhost:5173
-
-## Available Frontend Scripts
-
-From frontend directory:
-
-```bash
-npm run dev
-npm run build
-npm run preview
-npm run lint
-```
-
 ## API Endpoints
 
-Base URL in development: http://localhost:5000/api
+Base URL: `/api`
 
-- GET /todos
-- POST /todos
-- PATCH /todos/:id
-- DELETE /todos/:id
-
-## Production Notes
-
-- Build frontend first:
-
-```bash
-cd frontend
-npm install
-npm run build
-```
-
-- Start backend with ENV=production.
-- In production mode, Fiber serves frontend static files from frontend/dist.
+- `GET /todos`
+- `POST /todos`
+- `PATCH /todos/:id`
+- `DELETE /todos/:id`
 
 ## Troubleshooting
 
-- If frontend cannot reach API, verify frontend/.env has correct VITE_API_URL.
-- If Mongo connection fails, verify MONGODB_URI and network access.
-- CORS currently allows http://localhost:5173 in backend config.
+- Frontend import or dependency errors in Docker:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+- API connection issues:
+- Check `frontend/.env` (`VITE_API_URL`) for API connection issues.
+- Check backend health/logs when API is unreachable: `docker compose logs -f backend`.
+
+- MongoDB connection issues:
+- Verify `MONGODB_URI` in `backend/.env`.
+- Verify network/IP allowlist for MongoDB Atlas.
