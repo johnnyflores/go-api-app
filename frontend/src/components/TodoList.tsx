@@ -1,28 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
 import { Text, Flex, Stack } from "@chakra-ui/react";
 import TodoItem from "@/components/TodoItem";
 import { FaceSlightlySmiling, Loader } from "lucide-react";
+import { useTodos } from "@/hooks/useTodos";
 import type { Todo } from "@/types";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 const TodoList = () => {
-  const { data: todos, isLoading } = useQuery<Todo[]>({
-    queryKey: ["todos"],
-    queryFn: async (): Promise<Todo[]> => {
-      try {
-        const response = await fetch(API_URL + `/todos`);
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch todos");
-        }
-        return data || [];
-      } catch (error) {
-        console.error("Failed to fetch todos:", error);
-        return [];
-      }
-    },
-  });
+  const { todos, isLoading } = useTodos();
 
   return (
     <>
@@ -51,7 +34,7 @@ const TodoList = () => {
         </Stack>
       )}
       <Stack gap="3">
-        {todos?.map((todo) => (
+        {todos?.map((todo: Todo) => (
           <TodoItem key={todo._id} todo={todo} />
         ))}
       </Stack>

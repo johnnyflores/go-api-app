@@ -1,46 +1,38 @@
-import { useState } from "react";
-import type React from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Flex, Input } from "@chakra-ui/react";
 import { Loader, Plus } from "lucide-react";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useTodos } from "@/hooks/useTodos";
+import { todoSchema, type TodoSchemaType } from "@/schemas/todo.schema";
 
 const TodoForm = () => {
   const [newTodo, setNewTodo] = useState("");
-  const queryClient = useQueryClient();
+  const { createTodo, isCreating } = useTodos();
 
-  const { mutate: createTodo, isPending: isCreating } = useMutation({
-    mutationKey: ["createTodo"],
-    mutationFn: async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      try {
-        const response = await fetch(API_URL + `/todos`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ body: newTodo }),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error("Failed to create todo");
-        setNewTodo("");
-        return data;
-      } catch (error) {
-        console.error("Failed to create todo:", error);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-    onError: (error) => {
-      console.error("Error creating todo:", error);
-      alert("Error creating todo");
+  const form = useForm<TodoSchemaType>({
+    resolver: zodResolver(todoSchema),
+    defaultValues: {
+      body: "",
+      completed: false,
     },
   });
 
+  useEffect(() => {
+    form.reset({ body: newTodo, completed: false });
+  }, [newTodo, form]);
+
+  const onSubmit = async (values: TodoSchemaType) => {
+    try {
+      await createTodo({ body: values.body, completed: values.completed });
+      setNewTodo("");
+    } catch (error) {
+      console.error("Failed to submit todo:", error);
+    }
+  };
+
   return (
-    <form onSubmit={createTodo}>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <Flex gap={2}>
         <Input
           type="text"

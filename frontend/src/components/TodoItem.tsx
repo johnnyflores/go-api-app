@@ -1,52 +1,25 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Badge, Box, Flex, Text } from "@chakra-ui/react";
 import { Check, Trash2, Loader } from "lucide-react";
 import type { Todo } from "@/types";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useTodos } from "@/hooks/useTodos";
 
 const TodoItem = ({ todo }: { todo: Todo }) => {
-  const queryClient = useQueryClient();
-  const { mutate: updateTodo, isPending: isUpdating } = useMutation({
-    mutationKey: ["updateTodo"],
-    mutationFn: async () => {
-      if (todo.completed) return alert("Todo is already completed");
-      try {
-        const response = await fetch(API_URL + `/todos/${todo._id}`, {
-          method: "PATCH",
-        });
+  const todoId = todo._id;
+  const {
+    deleteTodo,
+    isDeleting,
+    updateTodo: updateTodoFromHook,
+    isUpdating: isUpdatingFromHook,
+  } = useTodos();
 
-        const data = await response.json();
-        if (!response.ok) throw new Error("Failed to update todo");
-        return data;
-      } catch (error) {
-        console.error("Failed to update todo:", error);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-  });
+  const handleUpdate = () => {
+    if (todo.completed) return alert("Todo is already completed!!");
+    updateTodoFromHook({ id: todoId, todo: { completed: true } });
+  };
 
-  const { mutate: deleteTodo, isPending: isDeleting } = useMutation({
-    mutationKey: ["deleteTodo"],
-    mutationFn: async () => {
-      try {
-        const response = await fetch(`${API_URL}/todos/${todo._id}`, {
-          method: "DELETE",
-        });
-
-        const data = await response.json();
-        if (!response.ok) throw new Error("Failed to delete todo");
-        return data;
-      } catch (error) {
-        console.error("Failed to delete todo:", error);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-  });
+  const handleDelete = () => {
+    deleteTodo(todoId);
+  };
 
   return (
     <Flex gap={2} alignItems="center">
@@ -77,11 +50,11 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
         )}
       </Flex>
       <Flex gap={2} alignItems="center">
-        <Box color={"green.200"} cursor="pointer" onClick={() => updateTodo()}>
-          {!isUpdating && <Check size={20} color="green" />}
-          {isUpdating && <Loader size={20} color="gray" />}
+        <Box color={"green.200"} cursor="pointer" onClick={handleUpdate}>
+          {!isUpdatingFromHook && <Check size={20} color="green" />}
+          {isUpdatingFromHook && <Loader size={20} color="gray" />}
         </Box>
-        <Box color={"red.500"} cursor="pointer" onClick={() => deleteTodo()}>
+        <Box color={"red.500"} cursor="pointer" onClick={handleDelete}>
           {!isDeleting && <Trash2 size={20} color="red" />}
           {isDeleting && <Loader size={20} color="gray" />}
         </Box>
