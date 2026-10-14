@@ -34,14 +34,21 @@ const TodoForm = () => {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <Flex gap={2}>
-        <Input
-          type="text"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          ref={(input) => {
-            if (input) input.focus();
-          }}
-        />
+        <Flex flex="1" flexDirection="column">
+          <Input
+            type="text"
+            value={newTodo}
+            onChange={(e) => setNewTodo(e.target.value)}
+            ref={(input) => {
+              if (input) input.focus();
+            }}
+          />
+          {form.formState.errors.body && (
+            <span style={{ color: "red", marginTop: "10px" }}>
+              {form.formState.errors.body.message}
+            </span>
+          )}
+        </Flex>
         <Button mx={2} type="submit" _active={{ transform: "scale(0.95)" }}>
           {isCreating ? <Loader size={16} /> : <Plus size={16} />}
         </Button>
