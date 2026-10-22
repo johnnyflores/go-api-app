@@ -13,7 +13,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "wget -qO- http://localhost:5000/api/todos >/dev/null 2>&1 || exit 1",
+          "wget -qO- http://localhost:5000/api/tasks >/dev/null 2>&1 || exit 1",
         ]
       interval: 10s
       timeout: 5s

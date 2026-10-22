@@ -1,14 +1,14 @@
-export type Todo = {
+export type Task = {
   _id: number;
   body: string;
   completed: boolean;
 };
 
-export interface CreateTodoRequest {
+export interface CreateTaskRequest {
   body: string;
   completed: boolean | undefined;
 }
 
-export interface UpdateTodoRequest {
+export interface UpdateTaskRequest {
   completed: boolean;
 }

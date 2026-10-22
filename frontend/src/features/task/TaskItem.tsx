@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Badge,
   Box,
@@ -14,53 +15,46 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Check, Trash2, Loader } from "lucide-react";
-import type { Todo } from "@/types";
-import { useTodos } from "@/hooks/useTodos";
+import type { Task } from "@/types";
+import { useTasks } from "@/hooks/useTasks";
 
-import React from "react";
-
-const TodoItem = ({ todo }: { todo: Todo }) => {
-  const todoId = todo._id;
+const TaskItem = ({ task }: { task: Task }) => {
+  const taskId = task._id;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef<HTMLButtonElement>(null);
   const toast = useToast();
-  const {
-    deleteTodo,
-    isDeleting,
-    updateTodo: updateTodoFromHook,
-    isUpdating: isUpdatingFromHook,
-  } = useTodos();
+  const { deleteTask, isDeleting, updateTask, isUpdating } = useTasks();
 
   const handleUpdate = () => {
-    if (todo.completed) {
+    if (task.completed) {
       toast({
         position: "top",
-        title: "Todo is already completed.",
+        title: "Task is already completed.",
         status: "info",
         duration: 3000,
         isClosable: true,
       });
       return;
     }
-    updateTodoFromHook({ id: todoId, todo: { completed: true } });
+    updateTask({ id: taskId, task: { completed: true } });
   };
 
   const handleDelete = async () => {
     try {
-      await deleteTodo(todoId);
+      await deleteTask(taskId);
       onClose();
       toast({
         position: "top",
-        title: "Todo deleted.",
+        title: "Task deleted.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
     } catch (error) {
-      console.error("Failed to delete todo:", error);
+      console.error("Failed to delete task:", error);
       toast({
         position: "top",
-        title: "Failed to delete todo.",
+        title: "Failed to delete task.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -81,17 +75,17 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
           justifyContent="space-between"
         >
           <Text
-            color={todo.completed ? "green.200" : "yellow.500"}
-            textDecoration={todo.completed ? "line-through" : "none"}
+            color={task.completed ? "green.200" : "yellow.500"}
+            textDecoration={task.completed ? "line-through" : "none"}
           >
-            {todo.body}
+            {task.body}
           </Text>
-          {todo.completed && (
+          {task.completed && (
             <Badge ml="1" colorScheme="green">
               Done
             </Badge>
           )}
-          {!todo.completed && (
+          {!task.completed && (
             <Badge ml="1" colorScheme="yellow">
               In Progress
             </Badge>
@@ -99,8 +93,8 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
         </Flex>
         <Flex gap={2} alignItems="center">
           <Box color={"green.200"} cursor="pointer" onClick={handleUpdate}>
-            {!isUpdatingFromHook && <Check size={20} color="green" />}
-            {isUpdatingFromHook && <Loader size={20} color="gray" />}
+            {!isUpdating && <Check size={20} color="green" />}
+            {isUpdating && <Loader size={20} color="gray" />}
           </Box>
           <Box color={"red.500"} cursor="pointer" onClick={onOpen}>
             {!isDeleting && <Trash2 size={20} color="red" />}
@@ -116,7 +110,7 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Todo
+              Delete Task
             </AlertDialogHeader>
             <AlertDialogBody>
               Are you sure? You can't undo this action afterwards.
@@ -136,4 +130,4 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
   );
 };
 
-export default TodoItem;
+export default TaskItem;

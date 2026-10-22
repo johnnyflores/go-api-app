@@ -1,11 +1,11 @@
 import { Text, Flex, Stack } from "@chakra-ui/react";
-import TodoItem from "@/components/TodoItem";
+import TaskItem from "@/features/task/TaskItem";
 import { FaceSlightlySmiling, Loader } from "lucide-react";
-import { useTodos } from "@/hooks/useTodos";
-import type { Todo } from "@/types";
+import { useTasks } from "@/hooks/useTasks";
+import type { Task } from "@/types";
 
-const TodoList = () => {
-  const { todos, isLoading } = useTodos();
+const TaskList = () => {
+  const { tasks, isLoading } = useTasks();
 
   return (
     <>
@@ -25,7 +25,7 @@ const TodoList = () => {
           <Loader size={24} color="gray" />
         </Flex>
       )}
-      {!isLoading && todos?.length === 0 && (
+      {!isLoading && tasks?.length === 0 && (
         <Stack alignItems="center" gap="3">
           <Text fontSize="xl" textAlign="center" color={"gray.500"}>
             All tasks completed!
@@ -34,12 +34,12 @@ const TodoList = () => {
         </Stack>
       )}
       <Stack gap="3">
-        {todos?.map((todo: Todo) => (
-          <TodoItem key={todo._id} todo={todo} />
+        {tasks?.map((task: Task) => (
+          <TaskItem key={task._id} task={task} />
         ))}
       </Stack>
     </>
   );
 };
 
-export default TodoList;
+export default TaskList;

@@ -1,6 +1,6 @@
-# Go + React Todo App
+# Go + React Task App
 
-Full-stack todo app with:
+Full-stack task app with:
 
 - Go backend (Fiber + MongoDB)
 - React frontend (Vite + TypeScript + Chakra UI + React Query)
@@ -129,10 +129,10 @@ npm run dev
 
 Base URL: `/api`
 
-- `GET /todos`
-- `POST /todos`
-- `PATCH /todos/:id`
-- `DELETE /todos/:id`
+- `GET /tasks`
+- `POST /tasks`
+- `PATCH /tasks/:id`
+- `DELETE /tasks/:id`
 
 ## Troubleshooting
 

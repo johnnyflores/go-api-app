@@ -37,7 +37,7 @@ func main() {
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-	routes.TodoRoutes(app)
+	routes.TaskRoutes(app)
 
 	port := os.Getenv("PORT")
 	if port == "" {
