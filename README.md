@@ -1,10 +1,28 @@
 # Go + React Task App
 
-Full-stack task app with:
+A full-stack task management application built with Go, React, and MongoDB. The project combines a REST API powered by Go and Fiber with a modern, responsive frontend built using React, TypeScript, and Chakra UI.
 
-- Go backend (Fiber + MongoDB)
-- React frontend (Vite + TypeScript + Chakra UI + React Query)
-- Docker Compose for running both services together
+The application uses MongoDB for data storage and Docker Compose to simplify development by running the backend and frontend services together.
+
+## Tech Stack
+
+- Backend: Go, Fiber
+- Database: MongoDB
+- Frontend: React, TypeScript, Vite
+- UI: Chakra UI
+- Data Fetching & State Management: TanStack React Query
+- Containerization: Docker and Docker Compose
+
+## Features
+
+- Full-stack architecture with separate frontend and backend services.
+- REST API built with Go and Fiber.
+- MongoDB integration for data persistence.
+- Modern frontend development with React and TypeScript.
+- UI components powered by Chakra UI.
+- Server-state management and data fetching with React Query.
+- Docker Compose configuration for running services together.
+- Development container configurations for streamlined development.
 
 ## Project Structure
 
@@ -150,3 +168,7 @@ docker compose up --build
 - MongoDB connection issues:
 - Verify `MONGODB_URI` in `backend/.env`.
 - Verify network/IP allowlist for MongoDB Atlas.
+
+## License
+
+This project was created as a personal portfolio project to demonstrate full-stack development skills, explore modern technologies, and support continuous learning and professional growth.
